@@ -17,57 +17,60 @@ export const goodsFromServer = [
 ];
 
 enum SortType {
-  LENGTH = 'L',
-  ALPHABET = 'A',
-  DEFAULT = '',
+  Length = 'length',
+  Alphabet = 'alphabet',
+  Default = '',
 }
 
 function getPreparedGoods(
   goods: string[],
-  isSorted: string,
+  sortType: SortType,
   isReversed: boolean,
 ): string[] {
-  const preperedGoods = [...goods];
+  const preparedGoods = [...goods];
 
-  switch (isSorted) {
-    case SortType.ALPHABET:
-      preperedGoods.sort((good1, good2) => good1.localeCompare(good2));
+  switch (sortType) {
+    case SortType.Alphabet:
+      preparedGoods.sort((good1, good2) => good1.localeCompare(good2));
       break;
-    case SortType.LENGTH:
-      preperedGoods.sort((good1, good2) => good1.length - good2.length);
+    case SortType.Length:
+      preparedGoods.sort((good1, good2) => good1.length - good2.length);
+      break;
+    default:
+      break;
   }
 
   if (isReversed) {
-    preperedGoods.reverse();
+    preparedGoods.reverse();
   }
 
-  return preperedGoods;
+  return preparedGoods;
 }
 
 export const App: React.FC = () => {
-  const [selectedSort, setSelectedSort] = useState<string>(SortType.DEFAULT);
-  const [reversed, setReversed] = useState<boolean>(false);
+  const [selectedSort, setSelectedSort] = useState<SortType>(SortType.Default);
+  const [isReversed, setIsReversed] = useState<boolean>(false);
   const visibleGoods = getPreparedGoods(
     goodsFromServer,
     selectedSort,
-    reversed,
+    isReversed,
   );
 
   const onReset = () => {
-    setSelectedSort(SortType.DEFAULT);
-    setReversed(false);
+    setSelectedSort(SortType.Default);
+    setIsReversed(false);
   };
 
-  const Alphabet = () => {
-    setSelectedSort(SortType.ALPHABET);
+  const onAlphabet = () => {
+    setSelectedSort(SortType.Alphabet);
   };
 
-  const Length = () => {
-    setSelectedSort(SortType.LENGTH);
+  const onLength = () => {
+    setSelectedSort(SortType.Length);
   };
 
-  const Reversed = () => {
-    setReversed(!reversed);
+  const onReversed = () => {
+    setIsReversed(prevIsReversed => !prevIsReversed);
   };
 
   return (
@@ -75,10 +78,10 @@ export const App: React.FC = () => {
       <div className="buttons">
         <button
           type="button"
-          className={cn('button is-success', {
-            'is-light': selectedSort !== SortType.ALPHABET,
+          className={cn('button is-info', {
+            'is-light': selectedSort !== SortType.Alphabet,
           })}
-          onClick={Alphabet}
+          onClick={onAlphabet}
         >
           Sort alphabetically
         </button>
@@ -86,24 +89,24 @@ export const App: React.FC = () => {
         <button
           type="button"
           className={cn('button is-success', {
-            'is-light': selectedSort !== SortType.LENGTH,
+            'is-light': selectedSort !== SortType.Length,
           })}
-          onClick={Length}
+          onClick={onLength}
         >
           Sort by length
         </button>
 
         <button
           type="button"
-          className={cn('button is-success', {
-            'is-light': !reversed,
+          className={cn('button is-warning', {
+            'is-light': !isReversed,
           })}
-          onClick={Reversed}
+          onClick={onReversed}
         >
           Reverse
         </button>
 
-        {(selectedSort || reversed) && (
+        {(selectedSort || isReversed) && (
           <button
             type="button"
             className="button is-danger is-light"
